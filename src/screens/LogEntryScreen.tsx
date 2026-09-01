@@ -47,14 +47,19 @@ export function LogEntryScreen({ navigation, route }: Props) {
   const shiftLabel = shift === 'morning' ? 'Morning' : 'Evening';
 
   async function onSave() {
-    const litresValue = Number(litres);
+    const trimmedLitres = litres.trim();
+    if (trimmedLitres.length === 0) {
+      Alert.alert('Check litres', 'Please enter milk litres.');
+      return;
+    }
+    const litresValue = Number(trimmedLitres);
     const rateValue = Number(rate);
-    if (!Number.isFinite(litresValue) || litresValue <= 0) {
-      Alert.alert('Check litres', 'Enter a litres value greater than 0.');
+    if (!Number.isFinite(litresValue) || litresValue < 0) {
+      Alert.alert('Check litres', 'Enter a litres value of 0 or greater.');
       return;
     }
     if (!Number.isFinite(rateValue) || rateValue <= 0) {
-      Alert.alert('Check rate', 'Enter a rate in Rs per litre greater than 0.');
+      Alert.alert('Check rate', 'Enter a rate in Rs. per litre greater than 0.');
       return;
     }
     setSaving(true);

@@ -21,7 +21,8 @@
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.raeash.dairyday"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,6 +30,11 @@
     "plugins": [
       "expo-sqlite",
       "expo-sharing"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "5dba8ac5-5f98-48a0-bbad-7cd334ff7ed5"
+      }
+    }
   }
 }

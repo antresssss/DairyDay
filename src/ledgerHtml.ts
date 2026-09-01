@@ -75,8 +75,8 @@ export function buildLedgerHtml(params: {
         <th class="num">Morning Milk(L)</th>
         <th class="num">Afternoon Milk(L)</th>
         <th class="num">Total(L)</th>
-        <th class="num">Rate(₹)</th>
-        <th class="num">Amount (₹)</th>
+        <th class="num">Rate(Rs.)</th>
+        <th class="num">Amount (Rs.)</th>
       </tr>
     </thead>
     <tbody>

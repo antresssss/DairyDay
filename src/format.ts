@@ -89,7 +89,7 @@ export function formatQty(value: number | null | undefined): string {
 }
 
 export function formatRupees(value: number): string {
-  return `₹${formatIndianInt(value)}`;
+  return `Rs. ${formatIndianInt(value)}`;
 }
 
 export function todayISO(): string {

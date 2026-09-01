@@ -54,7 +54,7 @@ export function LogEntryScreen({ navigation, route }: Props) {
       return;
     }
     if (!Number.isFinite(rateValue) || rateValue <= 0) {
-      Alert.alert('Check rate', 'Enter a rate in ₹ per litre greater than 0.');
+      Alert.alert('Check rate', 'Enter a rate in Rs per litre greater than 0.');
       return;
     }
     setSaving(true);
@@ -92,7 +92,7 @@ export function LogEntryScreen({ navigation, route }: Props) {
           style={styles.input}
           value={litres}
         />
-        <Text style={styles.label}>Rate (₹ per litre)</Text>
+        <Text style={styles.label}>Rate (Rs. per litre)</Text>
         <TextInput
           keyboardType="decimal-pad"
           onChangeText={setRate}

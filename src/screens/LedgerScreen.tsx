@@ -1,4 +1,3 @@
-import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import { useCallback, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
@@ -16,7 +15,7 @@ import {
   monthBounds,
   todayISO,
 } from '../format';
-import { buildLedgerHtml } from '../ledgerHtml';
+import { buildAndSaveLedgerPdf } from '../ledgerPdf';
 import { colors } from '../theme';
 import type { LedgerRow } from '../types';
 
@@ -64,14 +63,14 @@ export function LedgerScreen() {
     try {
       const from = start <= end ? start : end;
       const to = start <= end ? end : start;
-      const html = buildLedgerHtml({
+      // Pure JS PDF — no WebView, no native print pipeline, works on Android & iOS
+      const uri = await buildAndSaveLedgerPdf({
         start: from,
         end: to,
         farmerName,
         farmerAddress,
         rows,
       });
-      const { uri } = await Print.printToFileAsync({ html });
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(uri, {
           UTI: '.pdf',

@@ -1,16 +1,20 @@
+import { File, Paths } from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { useCallback, useState } from 'react';
 import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { Card } from '../components/Card';
 import { PrimaryButton } from '../components/PrimaryButton';
-import { getProfile, saveProfile } from '../db';
+import { exportAllDataJson, getProfile, saveProfile } from '../db';
+import { todayISO } from '../format';
 import { colors } from '../theme';
 
 export function SettingsScreen() {
   const [name, setName] = useState('');
   const [address, setAddress] = useState('');
   const [saving, setSaving] = useState(false);
+  const [exporting, setExporting] = useState(false);
 
   useFocusEffect(
     useCallback(() => {
@@ -41,6 +45,34 @@ export function SettingsScreen() {
     }
   }
 
+  async function onExportJson() {
+    setExporting(true);
+    try {
+      const payload = await exportAllDataJson();
+      const fileName = `dairyday-export-${todayISO()}.json`;
+      const file = new File(Paths.cache, fileName);
+      if (file.exists) {
+        try {
+          file.delete();
+        } catch {}
+      }
+      file.write(JSON.stringify(payload, null, 2));
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(file.uri, {
+          UTI: 'public.json',
+          mimeType: 'application/json',
+          dialogTitle: 'Export DairyDay data',
+        });
+      } else {
+        Alert.alert('JSON ready', file.uri);
+      }
+    } catch (error) {
+      Alert.alert('Export failed', String(error));
+    } finally {
+      setExporting(false);
+    }
+  }
+
   return (
     <View style={styles.screen}>
       <Text style={styles.title}>Profile</Text>
@@ -65,6 +97,12 @@ export function SettingsScreen() {
         />
       </Card>
       <PrimaryButton loading={saving} onPress={onSave} title="Save profile" />
+      <PrimaryButton
+        loading={exporting}
+        onPress={onExportJson}
+        title="Export data (JSON)"
+        variant="ghost"
+      />
     </View>
   );
 }

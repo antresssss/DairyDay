@@ -54,7 +54,53 @@ SQLite does not run fully on web; use a phone or emulator for this MVP.
 - Home: month running total, log buttons, today’s morning/evening status
 - Log entry: date, litres, rate (last used rate prefilled), upsert per date/shift
 - Dashboard: month totals, missed days, daily bar list
-- Settings: farmer name and address for the ledger header
+- Settings: farmer name and address for the ledger header; JSON data export
 - Ledger: date range, on-screen table, PDF export + share sheet (WhatsApp)
 
 Not in v1: multi-farmer, fat%/SNF, payments, UPI, cloud sync, login.
+
+## Local data (SQLite)
+
+Database file: `dairyday.db`. Schema version is stored in SQLite `PRAGMA user_version` (currently **1**). Existing installs keep all rows; new columns are added with a one-time migration.
+
+### `collection_entries`
+
+| Column | Notes |
+|---|---|
+| `id` | Integer primary key |
+| `date` | Local calendar date `YYYY-MM-DD` (unique). Not converted to UTC. |
+| `morning_litres` / `afternoon_litres` | `NULL` if that session was never logged (not stored as 0) |
+| `rate` | Rs. per litre |
+| `created_at` / `updated_at` | UTC ISO 8601 (`…Z`) |
+| `is_deleted` | `0` or `1`. Reads and the ledger PDF ignore deleted rows. There is no physical `DELETE`. |
+| `synced_at` | Reserved; stays `NULL` for now |
+
+### `profile`
+
+Key/value table. Keys include `farmer_name`, `farmer_address`, and `farmer_id` (UUID v4, generated once on first launch and never regenerated).
+
+### JSON export
+
+Settings → **Export data (JSON)** writes a cache file named `dairyday-export-YYYY-MM-DD.json` and opens the share sheet. Shape:
+
+```json
+{
+  "schema_version": 1,
+  "exported_at": "<UTC ISO>",
+  "farmer": { "farmer_id": "", "farmer_name": "", "farmer_address": "" },
+  "entries": [
+    {
+      "farmer_id": "",
+      "date": "YYYY-MM-DD",
+      "morning_litres": null,
+      "afternoon_litres": 12.5,
+      "rate": 60,
+      "created_at": "",
+      "updated_at": "",
+      "is_deleted": 0
+    }
+  ]
+}
+```
+
+The JSON export includes soft-deleted rows. Unlogged sessions stay `null`, not `0`.
